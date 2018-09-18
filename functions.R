@@ -19,3 +19,13 @@ rep(5:6,each=5)
 
 #get help for function c
 ?c()
+
+#Installing packages
+install.packages("ggplot2")
+
+#Only after typing the below can we get information about the packages.
+library(ggplot2)
+?ggplot()
+?qplot()
+?diamonds()
+
