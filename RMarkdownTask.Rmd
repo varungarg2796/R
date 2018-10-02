@@ -1,0 +1,28 @@
+---
+title: "R Markdown Task"
+output: pdf_document
+author: "Varun Garg 18205136"
+---
+## Load the MASS Package
+
+```{r}
+library(MASS)
+```
+
+# The shrimp Dataset
+```{r}
+data(shrimp)
+```
+help
+A numeric vector with 18 determinations by different laboratories of the amount (percentage of the
+declared total weight) of shrimp in shrimp cocktail.
+
+```{r}
+print(shrimp)
+```
+
+##Plot
+```{r}
+plot(shrimp)
+```
+

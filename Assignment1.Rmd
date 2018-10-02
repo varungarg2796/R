@@ -1,0 +1,37 @@
+---
+title: "Assignment1"
+output: pdf_document
+author: "Varun Garg 18205136"
+---
+
+
+
+## Loading the CSV
+
+```{r}
+data= read.csv("EurostatCrime2015.csv", header = TRUE)
+
+
+
+data$"Sexual.Crime"  <- rowSums(cbind(data$"Sexual.assault", data$"Sexual.violence", data$"Rape"), na.rm = T )
+data
+
+data = data[,!(names(data) %in% c("Rape","Sexual.violence", "Sexual.assault"))]
+data
+typeof(data)
+
+areComplete <- data[!complete.cases(data),]
+areComplete
+
+mydata = data[complete.cases(data), ]
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
