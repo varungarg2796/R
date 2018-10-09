@@ -11,23 +11,58 @@ author: "Varun Garg 18205136"
 ```{r}
 data= read.csv("EurostatCrime2015.csv", header = TRUE)
 
-summary(data)
+data
+```
 
+#Size and structure of the data frame
+
+```{r}
+typeof(data)
+nrow(data)
+ncol(data)
+```
+
+
+#Add a new column called Sex.crime which contains the sum of all the crimes that have a sexual component: Rape, Sexual.assault and Sexual.violence
+```{r}
 data$"Sexual.Crime"  <- rowSums(cbind(data$"Sexual.assault", data$"Sexual.violence", data$"Rape"), na.rm = T )
 data
+```
 
+
+```{r}
 data = data[,!(names(data) %in% c("Rape","Sexual.violence", "Sexual.assault"))]
 data
 typeof(data)
 nrow(data)
 ncol(data)
+```
+
+```{r}
 
 areComplete <- data[!complete.cases(data),]
-areComplete
+areComplete[,"X", drop =FALSE]
+```
 
+```{r}
 mydata = data[complete.cases(data), ]
 
-dim(mydata)
+#mydata[,"X", drop =FALSE]
+#mydata
+
+#mydata$max<-apply(mydata, 1, max)
+#mydata$max
+#mydata[which.max(mydata$Ireland),]
+ireland <- mydata[15,]
+ireland
+#display <- ireland[which.max(ireland)]
+
+suppressWarnings(colnames(ireland)[apply(ireland,1,which.max)])
+suppressWarnings(colnames(ireland)[apply(ireland,1,which.min)])
+colnames(ireland)[t(apply(ireland,1,sort)[1:3,])]
+
+
+#dim(mydata)
 ```
 
 ## Including Plots
