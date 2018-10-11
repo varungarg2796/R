@@ -52,7 +52,7 @@ mydata = data[complete.cases(data), ]
 
 #mydata$max<-apply(mydata, 1, max)
 #mydata$max
-#mydata[which.max(mydata$Ireland),]
+#mydata[which.max(mydata$Ireland),]    
 ireland <- mydata[15,]
 ireland
 #display <- ireland[which.max(ireland)]
