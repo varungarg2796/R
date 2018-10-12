@@ -3,74 +3,130 @@ title: "Assignment1"
 output: pdf_document
 author: "Varun Garg 18205136"
 ---
-
-
-
-## Loading the CSV
+## Task 1
 
 ```{r}
-data= read.csv("EurostatCrime2015.csv", header = TRUE)
+# Question-1
+# Load the dataset
 
-data
-```
-
-#Size and structure of the data frame
-
-```{r}
-typeof(data)
-nrow(data)
-ncol(data)
+# 1. Load the dataset EurostatCrime2015.csv. Notice that the first column of the csv
+#file contains the names of the countries that must be read as row names [Hint: Load
+#in the file using the function read.csv]. [0.5]
+data=read.csv("EurostatCrime2015.csv", header = TRUE)
 ```
 
 
-#Add a new column called Sex.crime which contains the sum of all the crimes that have a sexual component: Rape, Sexual.assault and Sexual.violence
 ```{r}
+#2. What is the size and the structure of this dataset? [0.3]
+print(ncol(data))
+print(nrow(data))
+```
+
+```{r}
+
+#3. Produce appropriate commands to answer the following questions:
+#(i) Add a new column called Sex.crime which contains the sum of all the crimes
+#that have a sexual component: Rape, Sexual.assault and Sexual.violence
+#[1]
+
 data$"Sexual.Crime"  <- rowSums(cbind(data$"Sexual.assault", data$"Sexual.violence", data$"Rape"), na.rm = T )
-data
+print(data)
+
+#(ii) remove the columns Rape, Sexual.assault and Sexual.violence. [1]
+
+data_new <- subset(data, select = -c(Rape, Sexual.assault, Sexual.violence))
 ```
+
+
 
 
 ```{r}
-data = data[,!(names(data) %in% c("Rape","Sexual.violence", "Sexual.assault"))]
-data
-typeof(data)
-nrow(data)
-ncol(data)
+#4. Work with the dataset you created in question (3ii), and list the countries that
+# contain any missing data.
+data_new[!complete.cases(data_new),1]
+```
+
+```{r}
+# 5. Remove the countries with missing data from the dataframe.
+data_filtered<- na.omit(data_new)
+data_filtered
+```
+
+```{r}
+# 6. What is the size of this new dataframe?
+print(ncol(data_filtered))
+print(nrow(data_filtered))
+```
+
+
+#Task 2
+
+```{r}
+# TASK-2
+
+# 1. According to these data what was the most common crime in Ireland in 2015?
+
+ireland <- data_filtered[data_filtered$X == "Ireland",]
+#print(ireland_data)
+
+max_value <- apply(ireland[,2:6],1,max)
+ # get column name whos value is the max value
+print("Most Common Crime in Ireland:")
+print(colnames(ireland)[which(ireland==max_value, arr.ind=TRUE)][2])
+#print(max_value)
+```
+
+```{r}
+# 2. And the 3 least common crimes in Ireland in 2015?
+
+print("The 3 Least common crimes in Ireland in 2015 ascending order:")
+
+minimum <- apply(ireland[,2:6],1,min)
+print(colnames(ireland)[which(ireland==minimum, arr.ind=TRUE)][2])
+
+ireland_new <- subset(ireland, select = -c(Intentional.homicide))
+minimum <- apply(ireland_new[,2:5],1,min)
+print(colnames(ireland_new)[which(ireland_new==minimum, arr.ind=TRUE)][2])
+
+ireland_new <- subset(ireland_new, select = -c(Robbery))
+minimum <- apply(ireland_new[,2:4],1,min)
+print(colnames(ireland_new)[which(ireland_new==minimum, arr.ind=TRUE)][2])
 ```
 
 ```{r}
 
-areComplete <- data[!complete.cases(data),]
-areComplete[,"X", drop =FALSE]
+#3. Which country have the highest record of offences (per hundred thousand inhabitants)?
+data_filtered$total_offences = 
+  data_filtered$Assault +
+  data_filtered$Theft + 
+  data_filtered$Intentional.homicide +
+  data_filtered$Sexual.Crime 
+
+max_offences <- max(data_filtered$total_offences)
+print(max_offences)
+
+indexOf_country_max_offences = rownames(data_filtered)[which(data_filtered==max_offences, arr.ind = TRUE)][1]
+
+country <- data_filtered$X[which(data_filtered$total_offences==max_offences)]
+country
+sprintf("Country with the highest record of offences: %s", country)
+
 ```
 
+
+#Task 3
 ```{r}
-mydata = data[complete.cases(data), ]
+Robbery <- data_filtered$Robbery
+barplot(Robbery, xlab = "Robbery", ylab="Frequency")
 
-#mydata[,"X", drop =FALSE]
-#mydata
+Theft <- data_filtered$Theft
+barplot(Theft, xlab = "Theft", ylab="Frequency")
 
-#mydata$max<-apply(mydata, 1, max)
-#mydata$max
-#mydata[which.max(mydata$Ireland),]    
-ireland <- mydata[15,]
-ireland
-#display <- ireland[which.max(ireland)]
+SexualCrime <- data_filtered$Sexual.Crime
+barplot(SexualCrime,horiz=TRUE, ylab = "Sexual.crime", xlab="Frequency")
 
-suppressWarnings(colnames(ireland)[apply(ireland,1,which.max)])
-suppressWarnings(colnames(ireland)[apply(ireland,1,which.min)])
-colnames(ireland)[t(apply(ireland,1,sort)[1:3,])]
+Intentional.homicide <- data_filtered$Intentional.homicide
+barplot(Intentional.homicide, ylab = "Intentional.homicide",horiz=TRUE, xlab="Frequency")
 
-
-#dim(mydata)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
