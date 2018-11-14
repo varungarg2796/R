@@ -1,0 +1,229 @@
+---
+title: "Assignment2"
+author: "Varun Garg"
+date: "14th November 2018"
+output: pdf_document
+---
+##Task 1
+```{r}
+
+data=read.csv("lawyers.csv")
+head(data)
+
+```
+
+```{r}
+#Q1. What proportion of the lawyers practices litigation law? 
+
+litigationRows = sum(data$Practice == "Litigation")
+totalRows = nrow(data)
+result = round(litigationRows / totalRows , 2)
+
+print(paste("Proportion of lawyer that practice litigation  (2 decimal places): ", result))
+```
+
+
+```{r}
+#Q2. Proportion of lawyers in Boston office that practice corporate law > proportion of lawyers in Providence office that practice corporate law
+proportionBoston = sum(data$Office == "Boston" & data$Practice == "Corporate") / totalRows
+print(paste("Proportion of lawyers in Boston office practicing corporate law: ",proportionBoston))
+
+```
+
+
+```{r}
+proportionProvidence = sum(data$Office == "Providence" & data$Practice == "Corporate") /totalRows
+print(paste("Proportion of lawyers in providence office practicing corporate law: ",proportionProvidence))
+
+#Yes, as proportionBoston > proportionProvidence.
+```
+
+```{r}
+#Q3.Use the aggregate function to compute the average age of lawyers who practice corporate law and of lawyers who practice litigation law, across the different levels of seniority. Label the columns of the resulting data frame appropriately
+
+subData = aggregate(data,by=list(data$Seniority,data$Practice),FUN = mean)
+print(subData)
+```
+
+```{r}
+#Q4. Which office has the youngest median age?
+medianAge <- aggregate(data$Age, by = list(data$Office), FUN=median)
+
+minimumMedianAge <- min(medianAge$x)
+
+medianAge[which(medianAge$x == minimumMedianAge),]
+
+##From the results, It shows that Harvard is the answer
+```
+
+##Task 2
+
+
+```{r}
+
+#Q1. Write a function which compute the Rosenbrock banana function using a loop. Test the function on the vectors x = (.2, .5) and x = (.2, .5, .1, .6)
+
+rosenbrockBanana <- function(x) {
+ n = length(x)
+ p = 0
+ for (i in 1:n-1) {
+ p <- sum(p , 100 * (x[i+1] - x[i]^2)^2 + (1-x[i])^2 )
+ }
+ return(p)
+}
+rosenbrockBanana(c(0.2,0.5)) 
+rosenbrockBanana(c(0.2,0.5,0.1,0.6))
+
+```
+
+
+```{r}
+#Q2. Rosenbrock without a loop
+
+rosenbrockBananaModified <- function(x) {
+ n = length(x)
+ first = 100 * (x[2] - x[1]^2)^2 + (1-x[1])^2
+ last = 100 * (x[n] - x[n-1]^2)^2 + (1-x[n-1])^2
+ f = sum(first:last)
+ return(f)
+}
+rosenbrockBananaModified(c(0.2,0.5))
+rosenbrockBananaModified(c(0.2,0.5,0.1,0.6))
+
+```
+
+
+```{r}
+#Q3. Compare the timings you obtain by repeating the function calls 100 times using the vector x = (.2, .5, .1, .6) as input.
+
+t0 <- Sys.time()
+for(i in 1:100) 
+  {rosenbrockBanana(c(0.2, 0.5, 0.1, 0.6))}
+t1 = Sys.time()
+print(paste("Time with loop: ", (t1 - t0) ))
+
+
+t2 = Sys.time()
+for(i in 1:100)
+  {rosenbrockBananaModified(c(0.2, 0.5, 0.1, 0.6))}
+t3 = Sys.time()
+print(paste("Time without loop: ", (t3 - t2) ))
+
+##Findings--Both the loops take almost the same time for 100 iterations
+```
+
+##Task 3
+
+```{r}
+#Q1. Load the dataset and assign the classes WeatherData and data.frame to it.
+DublinAirport <- read.csv("2018_09_Dublin_Airport.csv")
+class(DublinAirport) <- "WeatherData"
+```
+
+```{r}
+#Q2. Write an S3 summary method for an object of class WeatherData which produces the following statistical summaries for the rain, maxtp, mintp variables: mean, standard deviation, minimum, maximum.
+
+
+info <- function(x) {
+ UseMethod("info", x)
+}
+
+info.WeatherData <- function(x) {
+  
+ rainStd <- sd(x$rain)
+ mintpStd <- sd(x$mintp)
+ maxtpStd <- sd(x$maxtp)
+ rainMean <- mean(x$rain)
+ mintpMean <- mean(x$mintp)
+ maxtpMean <- mean(x$maxtp)
+ rainMin <- min(x$rain)
+ mintpMin <- min(x$mintp)
+ maxtpMin <- min(x$maxtp)
+ rainMax <- max(x$rain)
+ mintpMax <- max(x$mintp)
+ maxtpMax <- max(x$maxtp)
+
+ print(rainStd)
+ print(mintpStd)
+ print(maxtpStd)
+ print(rainMean)
+ print(mintpMean)
+ print(maxtpMean)
+ print(rainMin)
+ print(mintpMin)
+ print(maxtpMin)
+ print(rainMax)
+ print(mintpMax)
+ print(maxtpMax)
+
+}
+print(info(DublinAirport))
+class(DublinAirport) <- "data.frame"
+print(summary(DublinAirport))
+```
+
+
+
+
+```{r}
+#Q3. Download the new data set 2018 09 Cork Airport.csv from Blackboard, assign the classes WeatherData and data.frame to the object containing the Cork data, and test your function on it. Interpret your findings for Dublin and Cork Airports.
+CorkData <- read.csv("2018_09_Cork_Airport.csv")
+class(CorkData) <- "WeatherData"
+class(CorkData) <- "data.frame"
+print(summary(CorkData))
+#Findings - Dublin airport has a higher MaxTemp and MinTemp while Cork recieves higher Rainfall
+```
+
+
+
+```{r}
+#Q4. PLOTS!
+
+class(DublinAirport) <- "WeatherData"
+
+plots <- function(x) {
+ UseMethod("plots", x)
+}
+
+plots.WeatherData <- function(x) {
+###USER ENTERS COLORS HERE (User interaction)
+  maxTempColor <- "red"
+  minTempColor <- "blue"
+  precipitationColor<- "red"
+#Fixing the graph
+   par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0), las = 2, mfrow=c(2,1))
+  par(mfrow=c(2,1))
+ 
+#Temperature plots
+ plot(x$maxtp,type = "l",col = maxTempColor, xlab = "Sept 2018", ylab = "Temperature('C)", main =
+"Weather Data September 2018", ylim = c(-5,25))
+ legend(27,25, lty = c(1,1), legend = c("Max Temp","Min Temp"), col=c(minTempColor,maxTempColor)
+,cex = 0.5,bg='lightblue')
+ lines(x$mintp, type = "l", col = minTempColor)
+ abline(v=x$date, lty=2, col="gray")
+ axis(1,at=c(x$date))
+ text(2, max(x$maxtp), "Max of September", cex=0.5, pos=4, col="black")
+ text(25,min(x$mintp), "Min of September", cex=0.5, pos=4, col="black", pch="2" )
+ points(2,max(x$maxtp),pch=19,col="black")
+ points(25,min(x$mintp),pch=19,col="black")
+
+
+#Prectipitation plots
+maxfreq <- 1+(x$rain==max(x$rain))
+barplot(x$rain, xlab = "Sept 2018", ylab="Precipitation Amount (mm)", ylim = c(0,25), xlim=c(0,30),col=c("black",precipitationColor)[maxfreq])
+ axis(1,at=c(x$date))
+
+}
+
+print(plots(DublinAirport))
+
+```
+
+
+```{r}
+class(CorkData) <- "WeatherData"
+print(plots(CorkData))
+
+```
+
+
