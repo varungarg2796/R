@@ -1,0 +1,239 @@
+---
+title: "Assignment 2"
+author: "Harshit Loharuka 18203351"
+date: "14 November 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 1: Analysis
+
+```{r}
+data <- read.csv("Lawyers.csv")
+head(data)
+
+# 1) What proportion of the lawyers practice litigation law?
+
+Total_Rows <- nrow(data)
+litigation_law_rows <- sum(data$Practice == "Litigation")
+prop <- format(litigation_law_rows/Total_Rows, digits = 2)
+print(paste("Proportion of the lawyers practicing Litigation Law: ", prop))
+
+# 2) Is the proportion of lawyers in the Boston office that practice corporate law higher
+#    than the proportion of lawyers in the Providence office that practice corporate law?
+
+prop_Boston <- sum(data$Office == "Boston" & data$Practice == "Corporate") / Total_Rows
+print(paste("Proportion of Lawyers in Boston Office practicing Corporate law:", prop_Boston))
+
+prop_Providence <- sum(data$Office == "Providence" & data$Practice == "Corporate") / Total_Rows
+print(paste("Proportion of Lawyers in Providence Office practicing Corporate law:", prop_Providence))
+
+print("Yes, the proportion of lawyers in the Boston office that practice corporate law higher
+than the proportion of lawyers in the Providence office that practice corporate law")
+
+
+# 3) Use the aggregate function to compute the average age of lawyers who practice
+#    corporate law and of lawyers who practice litigation law, across the different levels
+#    of seniority. Label the columns of the resulting data frame appropriately.
+
+Agg_data = setNames(aggregate(data$Age, by=list(data$Practice, data$Seniority), FUN = mean), c('Practice','Seniority', 'Avg Age'))
+print(Agg_data)
+
+# 4) Which office has the youngest median age?
+
+med_age <- setNames(aggregate(data$Age, by=list(data$Office), FUN = median), c('Office', 'Median Age'))
+med_age[which(med_age$`Median Age` == min(med_age$`Median Age`)),]
+```
+
+
+## Task 2: Writing your own function
+
+```{r}
+# 1) Write a function which compute the Rosenbrock banana function using a loop. Test
+#    the function on the vectors x = (.2, .5) and x = (.2, .5, .1, .6)
+
+Rosenbrock_banana <- function(...){
+  argument = as.numeric(list(...))
+  len = length(argument)        #finding total length of data input
+  ans <- 0                      #initializing output with 0
+  for (i in 1:(len-1)) {        #Running a loop n-1 times for summation
+    ans <- ans + ( 100 * (argument[i+1] - argument[i]^2)^2 + (1-argument[i])^2 )
+  }
+  return(ans)
+}
+
+Rosenbrock_banana(0.2, 0.5)
+Rosenbrock_banana(0.2, 0.5, 0.1, 0.6)
+
+
+# 2) Propose an alternative function that does not use any loop. Test the function on
+#    the same two vectors.
+
+Rosenbrock_banana_2 <- function(...) {
+  argument = as.numeric(list(...))
+  len <- length(argument)         #finding total length of data input
+  first <- argument[1:(len-1)]    
+  last <- argument[2:len]
+  ans <- sum(100*(last-first^2)^2 + (first-1)^2)
+  return(ans)
+}
+
+Rosenbrock_banana_2(0.2, 0.5)
+Rosenbrock_banana_2(0.2, 0.5, 0.1, 0.6)
+
+# 3) Compare the timings you obtain by repeating the function calls 100 times using the
+#    vector x = (.2, .5, .1, .6) as input.
+
+time1 <- Sys.time()
+for(i in 1:100){
+  Rosenbrock_banana(0.2, 0.5, 0.1, 0.6)
+}
+
+time2 <- Sys.time()
+print(paste("Time with loop:",(time2 - time1)))
+
+
+Time3 <- Sys.time()
+for(i in 1:100){
+  Rosenbrock_banana_2(0.2, 0.5, 0.1, 0.6)
+}
+
+time4 <- Sys.time()
+print(paste("Time without loop:",(time4 - Time3)))
+
+print("Comparing the results for both function loop and without loop, I found that for the function without loop, time took less")
+```
+
+## Task 3: Writing S3 methods
+
+```{r}
+# 1) Load in the data as an object called DublinAirport. Assign to the DublinAiport
+#    object the classes WeatherData and data.frame.
+
+DublinAirport_data <- read.csv("2018_09_Dublin_Airport.csv")
+class(DublinAirport_data) <- "WeatherData"
+
+#DublinAirport_data
+
+# 2) Write an S3 summary method for an object of class WeatherData which produces
+#    the following statistical summaries for the rain, maxtp, mintp variables: mean,
+#    standard deviation, minimum, maximum.
+
+suma <- function(x) {
+  UseMethod("suma", x)
+}
+
+
+suma.WeatherData <- function(x) {
+  rain.mean <- mean(x$rain)
+  rain.std <- sd(x$rain)
+  rain.min <- min(x$rain)
+  rain.max <- max(x$rain)
+  
+  maxtp.mean <- mean(x$maxtp)
+  maxtp.std <- sd(x$maxtp)
+  maxtp.min <- min(x$maxtp)
+  maxtp.max <- max(x$maxtp)
+  
+  mintp.mean <- mean(x$mintp)
+  mintp.std <- sd(x$mintp)
+  mintp.min <- min(x$mintp)
+  mintp.max <- max(x$mintp)
+  
+  print(paste("Mean Rain:",rain.mean))
+  print(paste("Standard Deviation Rain",rain.std))
+  print(paste("Minimum Rain",rain.min))
+  print(paste("Maximum Rain",rain.max))
+
+  print(paste("Mean Maxtp",maxtp.mean))
+  print(paste("Standard Deviation Maxtp",maxtp.std))
+  print(paste("Minimum Maxtp",maxtp.min))
+  print(paste("Maximum Maxtp",maxtp.max))
+  
+  print(paste("Mean Mintp",mintp.mean))
+  print(paste("Standard Deviation Mintp",mintp.std))
+  print(paste("Minimum Mintp",mintp.min))
+  print(paste("Maximum Mintp",mintp.max))
+}
+
+#print("Dublin Airport Summary")
+print(suma(DublinAirport_data))
+class(DublinAirport_data) <- "data.frame"
+print(summary(DublinAirport_data))
+
+
+# 3) Download the new data set 2018 09 Cork Airport.csv from Blackboard, assign
+#    the classes WeatherData and data.frame to the object containing the Cork data,
+#    and test your function on it. Interpret your findings for Dublin and Cork Airports.
+
+
+CorkAirport_Data <- read.csv("2018_09_Cork_Airport.csv")
+class(CorkAirport_Data) <- "WeatherData"
+
+print("Cork Airport Summary")
+print(suma(CorkAirport_Data))
+class(CorkAirport_Data) <- "data.frame"
+print(summary(CorkAirport_Data))
+
+print("Comparing the results of Dublin Airport and Cork Airport, that raining happen aot in the later part of the year in Cork Airport. Maximum temperature vary alot and it's found higher in Dublin Airport compare to Cork Airport. In Dublin Airport I can see that Minimum temperature reaches to 0 while in Cork, it's quite high to 4.7")
+
+# 4) Create an S3 plot method for the class WeatherData that produces the following
+#    plots
+
+
+plots <- function(x) {
+  UseMethod("plots", x)
+}
+
+plots.WeatherData <- function(x) {
+  #DublinAirport
+  
+  par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0), las = 2, mfrow=c(2,1))
+  par(mfrow=c(2,1))
+  
+  #attach(mtcars)
+  #layout(matrix(c(1,1,2,2), 2, 2, byrow = TRUE), widths=c(2,2), heights=c(6,6))
+  
+  plot(x$maxtp,type = "l",col = "red", xlab = "Days of September 2018", ylab = "Temperature('C)" ,main = "Weather Data in Sept 2018", ylim = c(-5,25))
+  
+  lines(x$mintp, type = "l", col = "blue")
+  
+  legend(0,4, legend = c("Max Temp","Min Temp"), lty = c(1,1), col=c("red","blue"),cex = 0.55)
+  
+  abline(v=x$date, col="gray", lty = 2)
+  
+  axis(1,at=c(x$date))
+  
+  text(2, max(x$maxtp), "Max of September", cex=0.6, pos=4, col="red")
+  text(25,min(x$mintp), "Min of September", cex=0.6, pos=4, col="blue", pch="2" )
+  
+  points(2,max(x$maxtp),pch=19,col="red")
+  points(25,min(x$mintp),pch=19,col="blue")
+  
+  mfreq <- 1+(x$rain == max(x$rain))
+  barplot(x$rain, xlim = c(1,31), xlab = "Days of September 2018", ylab = "Precipitation Amount in mm",ylim = c(0,20), col = c("black","red")[mfreq])
+  
+  abline(v=x$date, col="gray")
+  
+  axis(1,at=c(1:31))
+  
+  
+}
+
+class(DublinAirport_data) <- "WeatherData"
+print(plots(DublinAirport_data))
+
+class(CorkAirport_Data) <- "WeatherData"
+print(plots(CorkAirport_Data))
+
+```
+
+
+
+
+
