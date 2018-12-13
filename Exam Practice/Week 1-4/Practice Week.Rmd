@@ -1,0 +1,337 @@
+---
+title: "Practice Week 1 and 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+#WEEK 1!!!!
+# concatenates 
+x <- c(1, 2, 4)
+
+#displays object
+x
+
+#displays element
+x[3]
+
+#displays range
+x[2:3]
+
+#sum of the object
+sum(x)
+
+#assign it to a different object y and print it
+
+y <- sum(x)
+y
+
+# R allows us to use more than one function
+# log of the sum
+z <- log(sum(x))
+z
+
+
+#R has a large number of functions 
+
+Nile
+#Get info about the dataset
+help(Nile)
+
+#calculates the mean of the dataset
+mean(Nile)
+
+#plots a graph of dataset nile
+plot(Nile)
+
+#prints out the histogram of dataset
+hist(Nile)
+
+#gets help for the function
+help(sum)
+#Or we can get help like this
+?sum
+
+
+# if we don't know the function, we can search by what we want to do
+#this will give us a list of functions that fall under the word
+help.search('standard deviation')
+#we can write the above as
+??"standard.deviation"
+
+# example will give us a list of examples specified under the function
+example(mean)
+
+#demo will give us example of range of things r can do
+demo(graphics)
+demo()
+
+
+#Writing our own functions
+
+#function counts the number of odd integers
+oddcount <- function(x) {
+  # Set k to be 0
+  k <- 0 
+  for(n in x) {
+    # %% finds remainder on division
+    if(n %% 2 == 1) k <- k + 1 
+    }
+  return(k)
+}
+
+oddcount(c(1,2,3,4,5,6))
+```
+
+
+
+
+```{r}
+##Week 2!
+#This is a vector
+x <- c(1,2,4)
+
+#another vector
+y <- c('cat','dog','rabbit')
+
+##***NOTE- Vector must be of the same type**
+
+
+x <- c(88, 5, 12, 13)
+
+#We can add to the vector
+x <- c(x[1:3], 168, x[4])
+
+#we can delete from vector
+x[-4]
+
+#need to declare vector beforehand
+#Just declaring will make it of type boolean
+y <- vector(length = 2)
+y
+
+y[1] <- 5
+y[2] <- 12
+y[3] <- 4
+
+#To declare type numeric
+y2 <- vector("numeric", length = 2)
+y2
+
+#indexing or accessing the elements
+
+v <- 2:3
+y[v]
+##or
+y[c(2,3)]
+
+
+##-----------
+###Let us look at how to generate a sequence
+##easiest way
+2:7
+
+#generates a sequence
+seq(from = 12, to = 30, by = 3)
+
+#Repeates 7 4 times
+rep(7, 4)
+
+##-------
+
+##-------
+#Working with any() and all()
+x <- 1:10
+any(x < 8)
+#if even one input satisfies, then true
+
+all(x < 8)
+#won't be true
+##-------
+
+
+##--- NA AND NULL
+##NA specifies that a value is missing 
+x <- c(88, NA, 12, 168, 13)
+x
+mean(x) ##won't give any result as there is a missing value
+mean(x, na.rm = TRUE) ##ignores na and shows result
+
+#Null means the value doesn't exist
+x <- c(88, NULL, 12, 168, 13)
+x
+mean(x) ##unlike NA, this will work fine
+##----
+
+
+##--findruns function
+
+findruns <- function(x, k) {
+  n <- length(x)
+  runs <- NULL
+  for(i in 1:(n - k + 1)) {
+    if(all(x[i:(i + k - 1)] == 1)) runs <- c(runs, i)
+    }
+  return(runs)
+}
+
+y <- c(1, 0, 0, 1, 1, 1, 0, 1, 1)
+findruns(y, 3)
+
+findruns(y, 2)
+findruns(y, 6)
+
+##------- Predicting discrete time series
+
+
+##Predicting discrete-valued time series.
+##Suppose we observe a vector of 1s and 0s where 1 = rain and 0 = no rain. We have 1 observation each day.
+##We’ll use a simple prediction rule. If the number of 1s in the previous k days is at least k / 2, then we’ll predict 1 for the next day, and 0 otherwise.
+##E.g., if we set k = 3 and observe (0, 1, 1) for the last 3 days then we’ll predict the next period to be 1.
+##If we had some training data, we could use different values of k and find out which value worked best (i.e. produced the least wrong answers)
+
+pred <- function(x, k) {
+  n <- length(x)
+  k2 <- k / 2
+  pred <- vector(length = n - k)
+  for(i in 1:(n - k)) {
+    if(sum(x[i:(i + (k - 1))]) >= k2) pred[i] <- 1 else pred[i] <- 0
+    }
+  return(mean(abs(pred - x[(k + 1):n])))
+}
+pred(y, 3)
+#--
+
+#-- Vectorized operation
+#each vector is applied on each element
+
+u <- 1:5
+w <- function(x) return(x + 1)
+w(u) #all in u will go +1
+
+sqrt(1:4)
+
+y <- c(12, 5, 13)
+y + 3
+#---------
+
+#-- Filtering -- useful for rejecting data which is not needed
+z <- c(5, 2, -3, 8) 
+w <- z[z^2 > 8]  ##only takes the element whose square is greater than 8
+w
+#---------
+
+#--filtering with subset
+
+#The subset function is really a neat shortcut for square brackets, but be aware that by default it removes NA values:
+#let us say we have x as follows
+x <- c(6, 1:3, NA, 12)
+x
+
+#will display x including NA
+x[x > 5]
+
+#will get rid of square brackets but will display NA too
+subset(x, x > 5)
+#-------
+
+
+
+##--Filtering with which
+#The which function gives you the element numbers that satisfy a certain condition.
+
+z <- c(5, 2, -3, 8)
+z^2
+
+which(z^2 > 8) #will give index of z which satisfy the condition
+
+z[which(z^2 > 8)] #will give elements from z
+##------------
+
+
+##--ifelse
+x <- 1:10
+y <- ifelse(x %% 2 == 0, "even", "odd")
+y
+##-------
+
+
+
+##-------------MATRICES---------------##
+
+#A matrix is a rectangular arrangement of numbers. You can create one using the matrix command:
+
+M <- matrix(1:6, nrow = 3, ncol = 2) 
+M
+
+#This creates a matrix of the numbers 1 to 6 with 3 rows and 2 columns.
+
+#Notice that by default the matrix is filled by column.
+
+#If we want to fill the matrix by row we use:
+
+m <- matrix(1:6, nrow = 3, ncol = 2, byrow = TRUE) 
+##------------------
+
+
+##--Accessing matrices
+M[1,] ##ACCESSING THE FIRST ROW
+M[,2]
+M[c(1, 3), 2] ##Accessing the column 2 but only taking first 2rows
+##--------------------
+
+##---MATRIX MULTIPLICATION
+
+t(M) %*% M
+
+#---
+
+
+##APPLY FUNCTION
+
+##apply(m, dimcode, f, fargs)
+##Here m is a matrix, dimcode is 1 for rows and 2 for columns, f is a function and fargs is a set of optional arguments that are required by f.
+
+apply(M, 2, mean)
+#This applies the function mean to the matrix M and performs the operation on each column.
+
+#can give apply our own functions
+f <- function(x) x / max(x)
+apply(M, 1, f) ##applied on rows
+
+length(M) ##gives length of Matrix
+dim(M) ##gives dimensions of matrix
+
+##Common problems with matrix
+
+r2 <- M[2,]
+r2
+#here, r2 is a vector
+
+#string function will give
+str(M)
+
+r2 <- as.matrix(M[2,]) #converted to r2
+r2
+
+##-------------------
+
+
+
+##--Column names
+
+colnames(M) <- c('a', 'b')
+rownames(M) = c('c', 'd', 'e')
+M
+
+##
+
+##Arrays and mainpulation week 2 left
+
+
+```
