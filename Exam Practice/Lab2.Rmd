@@ -1,0 +1,76 @@
+---
+title: "Lab2"
+output: html_document
+---
+
+```{r}
+
+
+install.packages("pixamp")
+
+
+x <-c(seq(from = 2, to = 10, by = 2))
+x 
+x <- x[-c(2, 4, 6)]
+x
+
+y <- 4:3
+z <- 2 * x + y
+#Write some code to determine if any of the values in z are less than 25. Write some code (using subset) to determine all the values in z that are divisible by 4. Use
+#which to find which elements of z are less than 20.
+# Task 6 - Take the find runs function and change it to look for runs of 0s instead
+any(z < 25)
+# TRUE!
+# Write some code (using subset) to determine all the values in z that are divisible by 4
+subset(z, z %% 4 == 0)
+# Find which elements of z are less than 20
+which(z < 20)
+
+
+
+findruns2 <- function(x, k) {
+  n <- length(x)
+  runs <- NULL
+  for(i in 1:(n - k + 1)) {
+    if(all(x[i:(i + k - 1)] != 0)) runs <- c(runs, i)
+  }
+  return(runs)
+}
+y <- c(1, 0, 0, 1, 1, 1, 0, 1, 1)
+findruns2(y, 3)
+findruns2(y, 2)
+findruns2(y, 6)
+
+# Change it again to find runs of any non-zero number
+findruns3 <- function(x, k) {
+  n <- length(x)
+  runs <- NULL
+  for(i in 1:(n - k + 1)) {
+    if(all(x[i:(i + k - 1)] > 0)) runs <- c(runs, i)
+  }
+  return(runs)
+}
+z <- sample(0:2, 100, replace = TRUE) # Creates a random run of 0s 1s and 2s
+findruns3(z, 3)
+findruns3(z, 2)
+findruns3(z, 6)
+
+M <- matrix(1:16, 4, 4)
+# Access the first row
+M[1,]
+# Access the second column
+M[,2]
+# Take the second and third row and 4th column
+M[2:3, 4]
+
+# Task 5 - What does the following command do?
+apply(M, 1, sd) 
+# Gives row standard deviations - should be all equal
+# What happens when you run again but after setting the bottom right value to be NA
+M[4,4] <- NA
+apply(M, 1, sd) 
+# You get an NA in your answer
+# Add an extra argument to the apply command to 
+apply(M, 1, sd, na.rm=TRUE) 
+# Now it works!
+```

@@ -1,0 +1,123 @@
+---
+title: "Week 5-7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Factors in R store categorical data: they are simply vectors with some additional information on the levels.
+```{r}
+##--Factors--##
+
+x <- c(5, 12, 13, 12) 
+xf <- factor(x)
+xf
+
+#The distinct values are the levels. Looking at the structure of xf:
+
+str(xf)
+
+#The values of xf are now actually 1, 2, 3, 2, rather than the values in x. Notice that the levels are characters.
+
+#If we know in advance there will be more levels than just in the present data we can specify them:
+
+xf2 <- factor(x, levels = c(5, 12, 13, 88))
+xf2
+
+#If we haven't specified a level then we can't use it in a factor:
+
+xf[2] <- 100
+xf
+
+##--------
+```
+
+```{r}
+
+##--------FUNCTIONS FOR FACTORS (TAPPLY)----------##
+weight <- c(205, 331, 175, 117, 272, 251)
+diet <- c('Diet_A', 'Diet_B', 'Diet_B', 'Diet_A', 'Diet_C', 'Diet_B')
+
+#Say we want to calculate the mean weight within each Diet group.
+#The command is tapply(x, f, g) where x is a vector, f is a factor, and g is a function. Here g is the function mean, x is the weight vector and diet is the factor:
+
+tapply(weight, diet, mean)
+
+#NOTE: here we haven't specified diet as a factor but tapply applies as.factor to it.
+#The tapply function splits the vector of ages up into different diets/groups and runs mean on each group.
+
+##----------------
+
+
+##----------FUNCTIONS FOR FACTORS (SPLIT)---------##
+
+#The split function does the first part of tapply, it just splits things into groups
+split(weight, diet)
+
+#Note that it returns a list. tapply takes that list and uses lapply on it.
+#If you type tapply without brackets at the R prompt you will see the contents of the function. Note that tapply uses split and lapply.
+##-------------------
+
+
+##------------------FUNCTIONS FOR FACTORS= BY ------------##
+
+#The function by works a bit like tapply but is applied to objects rather than vectors.
+#The general code is by(x, f, g) where x is a data object, f is a factor on which to split the data into groups and g is a function to be applied to each group
+
+library(MASS)
+by(birthwt, birthwt$race, function(m) glm(m[,1] ~ m[,2], family = binomial)) 
+
+#This will produce a logistic regression of age (column 2 of birthwt) against low birth weight (column 1) by race.
+#Replacing by with tapply will give an error as tapply works on a vector, not a data frame.
+```
+
+
+```{r}
+##TABLES
+
+birthwt2 <- data.frame(birthwt$low, birthwt$race)
+head(birthwt2)
+table(birthwt2)
+
+#The table function will take a data frame of 2 (or more) columns and turn them into a contingency table
+
+#If we just wanted counts on one of the variables we could use, for example:
+table(birthwt$low)
+
+
+#three dimensional matrix can produce messy outputs
+
+birthwt3 <- data.frame(birthwt$low, birthwt$race, birthwt$smoke)
+table(birthwt3)
+
+##accessing the table same way as a matrix
+
+tab1 <- table(birthwt2)
+tab1[1, 2]
+
+apply(tab1, 1, sum)
+
+
+##-------------------------aggregate
+#The aggregate function calls tapply for each variable in a group.
+
+aggregate(birthwt$age, list(birthwt$race), mean)
+
+#This is the mean age broken down by race. We can aggregate over multiple variables if required.
+
+
+##-----------------------CUT
+
+#cut is a useful function for generating a factor from a list of bins. The general use is cut(x, b) where x is a numeric variable and b is a set of bins
+
+cut(birthwt$bwt, c(0, 2000, 4000, 6000), labels = c('Low', 'Medium', 'High'), ordered_result = TRUE)
+
+#Here we are cutting the raw birth weights into 3 categories, 0-2000g, 2000-4000g, and 4000-6000g and giving them three labels.
+
+#The argument ordered_result allows you to creare an ordered factor
+
+#If you do not specify the labels then R will create labels for you. Alternatively use labels = FALSE.
+```
