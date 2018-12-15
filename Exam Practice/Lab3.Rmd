@@ -1,0 +1,52 @@
+---
+title: "Lab3"
+output: html_document
+---
+```{r}
+data("esoph")
+esoph
+
+
+dim(esoph)
+colnames(esoph)
+
+colnames(esoph) <- c('age', 'alcohol', 'tobaco', 'numCases', 'numControl')
+colnames(esoph)
+esoph
+
+#Q3
+esoph$numCases[15]
+esoph[15,4]
+esoph[15, 'NoCases']
+
+#Q4
+# Create a new variable total observations
+esoph$totalObs <- esoph$numCases + esoph$numControl
+esoph$totalObs 
+
+
+#Q5
+
+#esoph2 <- esoph[, 4:5] #instead of selecting
+esoph
+# Create a new data frame which contains only the number of cases and the number of controls columns
+new <- subset(esoph, select=c("numCases", "numControl"))
+new
+
+# Use sapply to calculate the mean, standard deviation and IQR for this new data frame
+
+sapply(new, mean)
+sapply(new, IQR)
+sapply(new, sd)
+
+
+#Q6
+esoph
+
+x <- subset(esoph, alcohol == '0-39g/day')
+y  <- subset(esoph, alcohol == '120+')
+y
+mean(x$numCases)
+mean(y$numCases)
+
+```

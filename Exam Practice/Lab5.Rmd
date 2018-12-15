@@ -1,0 +1,60 @@
+---
+title: "Lab 5 & 6"
+output: html_document
+---
+
+```{r}
+
+library(MASS)
+
+attach(quine)
+#1 . Load in the MASS library into R, and load the quine data set using the attach function. What does the quine data set record? Have a look at the structure of the data set using str.
+quine
+str(quine)
+?quine
+
+#2 Give the columns of the data set more informative names
+colnames(quine) <- c('Ethinic','Sex','Age','Learner','DaysAbsent')
+quine
+
+#3 Use the table function on the ethnic background variable. What ethnicity is most prevalent in the data set?
+table(quine$Ethinic)
+
+#is it asain? check
+
+
+#4 Use the factor function to change the age and learner variables into (sensibly!) ordered factors using the extra argument ordered = TRUE. Check the structure of the data set to ensure what you think has happened to these variables, actually has.
+quine$Age <- factor(quine$Age, ordered= TRUE) #order ho gaye
+quine$Learner <- factor(quine$Learner, levels = c('SL', "AL"), ordered = TRUE)
+
+quine
+
+
+#5 Use the table function to compare learner ability and ethnicity in a 2-way table. How many children in the study are slow learners? What other tables of interest can you create from this data set?
+
+table(quine$Learner, quine$Ethinic, deparse.level = 2) #deparse level se naam aa gaye
+addmargins(table(quine$Learner, quine$Ethinic, deparse.level = 2))
+
+addmargins(table(quine$Learner, quine$Age, deparse.level = 2))
+
+#add margins se sum ho jaata hai!!!!!!
+
+#6 Use tapply to see if the mean number of days absent is different for Aboriginal and non-Aboriginal students. What about the standard deviation?
+
+quine$DaysAbsent
+
+tapply(quine$DaysAbsent,quine$Ethinic, sd) #vector pehele
+tapply(quine$DaysAbsent,quine$Ethinic, mean) #vector pehele
+
+#7 Use aggregate to calculate the mean days absent by learner status and sex. What about the standard deviation?
+
+aggregate(quine$DaysAbsent, list(quine$Sex,quine$Learner),mean)
+aggregate(quine$DaysAbsent, list(quine$Sex,quine$Learner),sd)
+
+#8 Use the cut function on the days absent variable to divide it up into 3 categories: few (0-20), medium (20-60) and many (60-100). Have a look at the output. Is there anything strange going on here? If so, how can you fix it (use the help file!). How many students fall into the many category?
+
+# Cut days absent into 3 categories and produce a new table - how many scarily absent students?
+
+cut.days <- cut(quine$Days, c(0, 20, 60, 100), labels = c('few', 'medium', 'many'), ordered_result = TRUE, include.lowest = TRUE)
+table(cut.days)
+```

@@ -1,0 +1,74 @@
+---
+title: "Assignment1_self"
+output: html_document
+---
+
+```{r}
+
+#1 
+myData <- read.csv(file="EurostatCrime2015.csv", header=TRUE, sep=",",row.names = 1)
+
+#2 What is the size and the structure of this dataset?
+dim(myData)
+typeof(myData)
+
+#3
+
+#(i)Add a new column called Sex.crime which contains the sum of all the crimes that have a sexual component: Rape, Sexual.assault and Sexual.violence
+
+data <- data.frame(myData)
+
+data$Sex.crime <- data$Rape + data$Sexual.assault + data$Sexual.violence
+
+head(data)
+
+#(ii)remove the columns Rape, Sexual.assault and Sexual.violence.
+
+
+data <- subset(data, select = -c(Sexual.assault, Sexual.violence))
+#OR
+
+data$Rape <- NULL
+data$Sexual.assault <- NULL
+data$Sexual.violence <- NULL
+head(data)
+
+
+
+#4 Work with the dataset you created in question (3ii), and list the countries that contain any missing data.
+data[!complete.cases(data),1]
+#or
+
+vec1 <- complete.cases(data)
+rownames(data)[!vec1]
+
+#5Remove the countries with missing data from the dataframe
+
+data <- na.omit(data)
+#or
+data[complete.cases(data), ]
+
+head(data)
+
+#6. What is the size of this new dataframe? 
+
+dim(data)
+
+
+##PART 2
+
+#1. According to these data what was the most common crime in Ireland in 2015? [1]
+
+head(data, n=40)
+
+names(which.max(data["Ireland",]))
+
+#2. And the 3 least common crimes in Ireland in 2015?
+
+names(sort(data['Ireland',])[1:3])
+
+#3 Which country have the highest record of offences (per hundred thousand inhabitants)?
+#sum across
+data$Total <- apply(data, 1, sum)
+row.names(data)[which.max(data$Total)]
+```
