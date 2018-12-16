@@ -1,0 +1,11 @@
+---
+title: "plots"
+output: html_document
+---
+
+```{r}
+
+library(MASS)
+
+survey
+```

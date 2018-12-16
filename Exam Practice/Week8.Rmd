@@ -1,0 +1,104 @@
+---
+title: "Week8"
+output: html_document
+---
+
+Everything we use in R (functions, vectors, data frames, etc) is an object.
+There are several important features of OOP that R promotes:
+Encapsulation - data items are packaged into one class instance and makes keeping track of everything easier.
+Polymorphism - the same function will have different actions on different classes.
+Inheritance - objects of one class can inherit characteristics of another class.
+R mainly uses two types of classes: S3 and S4. In this lecture we'll study them in detail and go through the differences
+
+```{r}
+
+#An S3 class consists of a list with a class name attribute (e.g. lm) and dispatch capability.
+#The dispatch capability means that you can make use of generic functions (e.g. print or summary).
+
+
+#S3 generic functions
+#We have met a number of functions that work on vectors, lists, matrices, etc: print, plot, summary.
+
+#These are known as generic functions, in that they act differently for different types of objects given to them.
+y <- list(tag1 = 2, tag2 = c(2, 3), tag3 = 1:10)
+print(y)
+
+mod <- lm(Fertility ~ ., data = swiss)
+print(mod) #will act differently
+
+class(y) #list
+class(mod) #lm
+
+unclass(mod)
+
+j <- list(name = 'Joe', salary = 55000, union = TRUE)
+class(j) <- 'employee'
+j 
+
+print.employee <- function(wkr) {
+  cat(wkr$name, '\n')
+  cat('salary', wkr$salary, '\n')
+  cat('union member', wkr$union, '\n')
+}
+j
+
+x <-  list(name = 'Jj', salary = 5100, union = TRUE)
+class(x) <- 'employee'
+x
+
+k <- list(name = 'Kate', salary = 68000, union = F, hrs_this_month = 2)
+class(k) <- c('hrly_employee', 'employee') #inheriting employee
+k
+
+summary(k)
+
+
+```
+
+
+Problems with S3
+S3 classes do not provide much safety if we make a mistake.
+For our example on employees (slide 10), we might:
+Forget to enter a field.
+Mis-spell one of the fields.
+Accidentally give a different object the class employee.
+An object of S3 class will not complain when such things happen, but an object of S4 class will not allow such mistakes.
+S4 classes are much more formal when we are creating objects, defining the class, etc.
+
+```{r}
+#The setClass function will create an S4 class, whilst new will create S4 objects:
+
+#make a class first
+setClass('employee', 
+  representation(name = 'character', salary = 'numeric', union = 'logical'))
+#assign an object to it
+joe <- new('employee', name = 'Joe', salary = 55000, union = TRUE)
+joe
+
+#S4 objects contain values in slots rather than tags.
+
+#Slots are accessed with an @ sign or the slot function:
+
+joe@salary
+slot(joe, 'union')
+
+#We can update objects in the same way as a list:
+joe@salary <- 65000 
+
+#… but it won't allow us to add new elements:
+
+joe$salary <- 55000
+
+
+#The setMethod function creates new S4 generic functions:
+
+setMethod('show', 'employee', 
+  function(object) {
+  inorout <- ifelse(object@union, 'is', 'is not')
+  cat(object@name, 'has a salary of', object@salary, 'and', 
+    inorout, 'in the union \n')
+  }
+)
+joe
+
+```

@@ -4,5 +4,146 @@ output: html_document
 ---
 ```{r}
 
+##For loops
 
+x <- c(2, 4, 6)
+for(i in x) { # for loop over the elements of x
+  print(i) # print the current value of i
+  print(i^2) # print the current value of i^2
+}
+
+##looping over non vectors
+u <- matrix(1:6, 3, 2)
+v <- matrix(7:12, 3, 2)
+for(i in c('u', 'v')) {
+  print(i) # print the value of i
+  z <- get(i) # get the object with the name given by the current value of i
+  print(colMeans(z)) # print the values of the column means
+}
+
+
+#####--------------WRITING FUNCTIONS----------------###
+
+fun1 <- function(x, printx = TRUE, printy = TRUE) {
+  y <- x^2
+  if(printx) print(x) # if(printx) is the same as if(printx == TRUE) 
+  if(printy) print(y) # if(printy) is the same as if(printy == TRUE)
+  return(y)
+}
+
+fun1(5) #will assume true has been passed
+x<- fun1(5) #will display all
+x #will return 25
+
+answer <- fun1(5, printx = FALSE, printy = FALSE) # does not print x and y
+answer
+
+##we can give arguement in any order
+
+##if we don't name them, then we must write in order
+
+answer <- fun1(5, FALSE) # this is the same as fun1(x = 5, printx = FALSE, printy = TRUE)
+
+
+##TO RETURN MULTIPLE VALUES, WE CAN RETURN A LIST
+
+fun2 <- function(x, printx = TRUE, printy = TRUE) {
+  y <- x^2
+  if(printx) print(x)
+  if(printy) print(y)
+  return(list(input = x, output = y))
+}
+
+##INVISIBLE FUNCTION
+
+##DOES NOT RETURN A VALUE UNTIL IT IS ASSIGNED TO AN OBJECT
+fun3 <- function(x, printy = TRUE) {
+  y <- x^2
+  if(printy) print(y)
+  invisible(y) # do not print the value returned by the function if that's not assigned to an object
+}
+fun3(5, FALSE) ##Won't show anything here as we have invisible!!
+answer <- fun3(5, FALSE)
+answer
+
+
+
+##FLEXIBLE ARGUEMENTS IN FUNCTION
+
+fun5 <- function(x,...) {
+  return(mean(x,...))
+}
+
+
+fun5(c(1:10))
+
+fun5(c(1:10, NA))
+
+fun5(c(1:10, NA), na.rm = TRUE)
+
+##na.rm is extra arguement. Ellipsis helps us to do that
+
+
+
+##----environment and ls.str
+
+#below is like javascript, object ke andar function!
+w <- 12
+f2 <- function(y) {
+  d <- 8
+  h <- function(){
+    return(d * (w + y))
+    }
+  print(environment()) #show the current environment
+  print(ls.str())  # give the list the objects in the current environment and their structure
+  return(h())
+}
+
+f2(2)
+
+#Recursion!
+
+fact <- function(x) {
+  if(x == 1) return(x)
+  return(x * fact(x - 1))
+}
+fact(5)
+
+fibo <- function(x){
+  if(x <=2) return 
+  return 
+}
+
+
+##WRITING YOUR OWN OPERATOR!!!
+
+"%aplusb%" <- function(a, b) return(a + b) 
+3 %aplusb% 5
+
+#anyon function. No name, just dispose them
+
+M <- matrix(1:6, nrow = 3, ncol = 2)
+f <- function(x) x / max(x)
+apply(M, 1, f)
+
+##NEGATIVE LOG LIKELIHOOD
+
+neglikfun <- function(parameters) {
+  beta0 <- parameters[1]
+  beta1 <- parameters[2]
+  # separate data in 0s and 1s
+  daty0 <- y == 0
+  daty1 <- y == 1
+  # calculate the log-likelihood
+  loglikelihood <- sum(log(1 / (1 + exp(- beta0 - beta1 * x[daty1])))) + 
+    sum(log(1 - (1 / (1 + exp(- beta0 - beta1 * x[daty0])))))
+  # return the negative of the log-likelihood
+  return(-loglikelihood)
+}
+
+library(MASS)
+data(birthwt)
+x <- birthwt$age
+y <- birthwt$low
+neglikfun(c(1, -0.1))
 ```

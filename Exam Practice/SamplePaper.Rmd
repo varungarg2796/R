@@ -1,0 +1,89 @@
+---
+title: "SamplePaper"
+output: html_document
+---
+
+```{r}
+
+data("iris")
+iris
+set <- iris[iris$Species== 'setosa',]
+ver <- iris[iris$Species== 'versicolor',]
+vir <- iris[iris$Species== 'virginica',]
+
+mean(set$Sepal.Length, na.rm = TRUE) 
+mean(ver$Sepal.Length, na.rm = TRUE) 
+mean(vir$Sepal.Length, na.rm = TRUE) 
+#VIRGINICA has the largest mean
+#OR
+aggregate(iris$Petal.Length,by=list(iris$Species),mean)
+
+
+sd(set$Sepal.Length, na.rm = TRUE) 
+sd(ver$Sepal.Length, na.rm = TRUE) 
+sd(vir$Sepal.Length, na.rm = TRUE) 
+##SETOSA HAS THE SMALLEST SD
+#OR
+aggregate(iris$Petal.Length,by=list(iris$Species),sd)
+
+
+#Which has the biggest sepal width
+
+which.max(iris[,"Sepal.Width"])  #16th observation
+max(iris$Sepal.Width, na.rm = TRUE) #Gives the max value
+
+# Calculate the correlation between the four quantitative variables. Which pair have the weakest correlation? Which pair have the strongest?
+iris
+cor(iris[,1:4])
+
+#Petal width and petal length have the highest
+
+by(iris[,1:2],iris$Species,cor)
+
+cor(set[,1:2]) 
+cor(vir[,1:2]) 
+cor(ver[,1:2]) 
+#CORRELATIONS ARE POSITIVEE!
+
+#plot (iris$Sepal.Length, iris$Sepal.Width, type = "n", xlab= "Sepal Length", ylab = "Sepal Width")
+#points(iris$Sepal.Length, col= 'blue', pch= 15)
+#points(iris$Sepal.Width, col= 'red', pch= 15)
+#title("Student smoking frequency")
+
+
+plot(iris[,1],iris[,2],xlab='Sepal length',ylab='Sepal Width',main='Scatter plot of sepal length versus sepal width',las=1,type='n')
+sep.setosa = as.matrix(subset(iris[,1:2],iris$Species=='setosa'))
+
+sep.versicolor = as.matrix(subset(iris[,1:2],iris$Species=='versicolor'))
+sep.virginica = as.matrix(subset(iris[,1:2],iris$Species=='virginica'))
+points(jitter(sep.setosa),col='red')
+points(jitter(sep.versicolor),col='blue')
+points(jitter(sep.virginica),col='green')
+legend('topright',legend=c('Setosa','Versicolor','Virginica'),col=c('red','blue','green'),pch=1)
+# For each species each sepal petal/width pair has positive correlation but when combined together they have negative correlations
+# This is Simpson's paradox!
+
+
+
+g = 1;
+deriv <- function(g , n){
+  
+  if(n == 0){
+    return (g)
+  }
+  g = D(expression(g), 'x')
+  return (deriv(g,n-1))
+}
+
+deriv(3*x , 1)
+
+fu <- function(n){
+  a <- expression(n)
+  g = eval(D(a, 'x'))
+  return (g)
+}
+
+fu(exp(x^3))
+ 
+D(expression(3*n), 'x')
+```

@@ -1,0 +1,184 @@
+---
+title: "Week7"
+output: html_document
+---
+
+
+We have met most simple arithmetic operations in R: +, -, etc.
+R has many more (all vectorised):
+exp(): exponential function
+log(): natural logarithm (see also log10 and log2)
+sqrt(): square root
+abs(): absolute value
+sin(), cos(), tan(), asin(), acos(),…: trigonometry
+min(), max(), pmin(), pmax(), which.min(), which.max(): minima and maxima
+sum(), prod(), cumsum(), cumprod(): sums and products
+round(), floor(), ceiling(), signif(): methods for rounding numbers
+```{r}
+# MIN AND MAX
+z <- matrix(c(1, 5, 6, 2, 3, 2), nrow = 3, ncol = 2)
+z
+min(z)
+
+z1 <- z[, 1]
+z2 <- z[, 2]
+min(z1, z2) 
+
+pmin(z1, z2) #pmin and pmax find parallel minima/maxima across multiple vectors or matrices.
+?pmin
+
+
+##DERIVATIVE AND ITEGRATION!!! DIFFERENTATION AND INTEGRATION
+
+D(expression(exp(x^2)), 'x') #x^2 -> 2x
+integrate(function(x) x^2, 0, 1)
+
+
+
+
+```
+
+
+
+R contains a large range of functions for evaluating probability distributions. These all follow a set pattern:
+d for density (or pdf)
+p for cumulative density (or cdf)
+q for quantiles
+r for random number generation
+Distributions include: norm (Normal), binom (Binomial), chisq (Chi-squared), f (F-distribution), pois (Poisson), t, etc, etc
+Example: plotting the pdf of a normal distribution:
+
+```{r}
+x <- seq(-4, 4, length = 100)
+plot(x, dnorm(x), type = 'l')
+
+
+
+##Sorting
+
+
+x <- c(5, 13, 12, 5)
+sort(x) #sort takes a vector and puts it in order.
+
+order(x) #order gives the order of the vector x (i.e. the first element is the smallest, etc).
+
+rank(x) #rank gives the rank order of the vector (so the 1st and 4th elements are the smallest and are given rank (1 + 2) / 2.
+
+#Both sort and order have an extra argument decreasing for reversing the operation.
+
+d <- data.frame(kids = c('Jack', 'Jill', 'Billy'), ages = c(12, 10, 13))
+d[order(d$kids,decreasing = TRUE),  ] #name descedning order
+d[order(d$kids),  ] 
+d[order(d$ages),]
+d[order(d$ages, decreasing = TRUE), ] #age decreasing
+
+?order
+```
+
+Set operations
+If you have a set of items stored in a vector, R can compare them using set operations:
+union(x, y): Creates the union set of x and y
+intersect(x, y): Creates the intersection of x and y
+setdiff(x, y): Creates the set of all objects in x that are not in y
+setequal(x, y): Determines if x and y are equal
+c %in% y: Tests whether c is an element of y
+
+```{r}
+##LINEAR ALGEBRA!!
+
+#There are other useful linear algebra functions:
+#solve(): finds a matrix equation solution or matrix inverse
+#t(): matrix transpose
+#chol(), qr(), eigen(): Cholesky, QR and eigen decomposition
+#det(): Determinant
+#diag(): Find or set the matrix diagonal
+#sweep(): Removes summary statistics from matrices.
+
+#solve(): solve is useful for finding solutions to simultaneous equations:
+
+A <- matrix(c(1, -1, 1, 1), 2, 2) 
+b <- c(2, 4)
+x <- solve(A, b)
+x
+
+#diag(): diag works to obtain the diagonal from a matrix, to set it, or to create a diagonal matrix:
+
+M <- matrix(1:9, 3, 3)
+diag(M) #will return diagonals
+
+
+diag(M) <- 7 #diagonals will become 7
+M
+
+M <- diag(c(3, 1)) #set diagonals to this value
+M 
+
+#sweet() - sweep is a neat function to remove a summary statistic from a numeric data frame/matrix:
+
+?sweep
+
+head(swiss, 3) # Swiss Fertility and Socioeconomic Indicators (1888) Data
+
+# centre the variables around their mean
+mean.swiss <- apply(swiss, 2, mean) # calculate the column means. Same as colMeans(swiss)
+swiss.mean0 <- sweep(swiss, 2, mean.swiss)
+head(swiss.mean0, 3)
+
+#Correlation
+
+#Correlation measures the degree of relatedness between two (or more) vectors. The Pearson correlation is defined as:
+cor(swiss[,1:3])
+
+#t-test
+#Usual set-up: 2 vectors (can be different lengths) where you want to test whether or not they have the same mean.
+t.test(extra ~ group, data = sleep, paired = TRUE)
+
+#Linear regression
+mod <- lm(Fertility ~ ., data = swiss)
+summary(mod)
+```
+
+
+
+Heads and Tails
+What is the probability of getting at least 4 heads from 5 tosses of a coin?
+We could do this algebraically using the probability mass function of the Binomial distribution. (1 = head, 0 = tail).
+
+```{r}
+#Binomial distribution
+1 - pbinom(3, 5, 0.5) # Pr(X >= 4) = 1 - Pr(X <= 3)
+
+#Alternatively we could simulate a large number of such coin tosses and find how often at least 4 heads occur:
+large <- 100000
+x <- rbinom(large, 5, 0.5)
+mean(x >= 4)
+
+#Remember x >= 4 is a logical variable so finding the mean is equivalent to finding the proportion of times such an event occurs.
+
+#MAXIMA OF TWO N(0,1)
+#Suppose we want to find the mean of the maximum of two standard normal random variables.
+nreps <- 100000
+sum <- 0
+for(i in 1:nreps) {
+  xy <- rnorm(2)
+  sum <- sum + max(xy)
+  } 
+print(sum / nreps)
+
+#without loops
+x <- rnorm(nreps)
+y <- rnorm(nreps)
+maxxy <- pmax(x, y)
+mean(maxxy) 
+
+#SNAP!!! (sample)
+#Suppose you play a game of snap with two players who each have a shuffled pack of cards. You both turn over cards until you reach an identical pair.
+
+cards <- 1:52
+p1hand <- sample(cards)
+p2hand <- sample(cards)
+snaptime <- which((p1hand - p2hand == 0) == TRUE)[1]
+snaptime
+#Here it took 24 draws before snap was called
+
+```
